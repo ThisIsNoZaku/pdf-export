@@ -15,7 +15,7 @@ public interface FieldValueExtractor {
 	 * resulting map.
 	 * 
 	 * @param annotatedObject
-	 * @return
+	 * @return the field name-to-value mappings
 	 */
 	public abstract Map<String, String> generateFieldMappings(
 			Object annotatedObject);
