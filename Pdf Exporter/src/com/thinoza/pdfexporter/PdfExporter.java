@@ -1,16 +1,54 @@
 package com.thinoza.pdfexporter;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
-import com.thinoza.pdfexporter.internal.ReflectionFieldExtractor;
+/**
+ * Fills and saves a pdf form.
+ * 
+ * @author Damien
+ *
+ */
+public class PdfExporter {
+	private final PdfFieldWriter writer;
 
-public class PdfExporter{
-	private final ReflectionFieldExtractor extractor = new ReflectionFieldExtractor();
-	
-	public void exportPdf(Object data, File originPdf, File destination){
-		Map<String, String> fieldMappings = extractor.generateFieldMappings(data);
-		
-		PDFb
+	/**
+	 * Parameterized constructor, which allows a custom implementation of
+	 * PdfWriter to be provided.
+	 * 
+	 * @param writer
+	 *            the writer
+	 */
+	PdfExporter(PdfFieldWriter writer) {
+		if (writer == null) {
+			throw new IllegalStateException();
+		} else {
+			this.writer = writer;
+		}
+	}
+
+	/**
+	 * No-args constructor, using the default internal implementation for the
+	 * writer.
+	 */
+	public PdfExporter() {
+		this(new DefaultPdfWriter());
+	}
+
+	/**
+	 * Fills the pdf from data and writes the result to destination.
+	 * 
+	 * @param fieldMappings
+	 *            the field mappings
+	 * @param originPdf
+	 *            the pdf
+	 * @param destination
+	 *            the destination
+	 * @throws IOException
+	 */
+	public void exportPdf(Map<String, String> fieldMappings, File originPdf,
+			File destination) throws IOException {
+		writer.writePdf(originPdf, destination, fieldMappings);
 	}
 }
