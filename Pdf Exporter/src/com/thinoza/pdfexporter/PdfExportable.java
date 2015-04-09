@@ -1,7 +1,7 @@
 package com.thinoza.pdfexporter;
 
 /**
- * Annotation for mapping object to pdf form fields.
+ * Annotation for mapping object to pdf form fields when using the {@link ReflectionFieldExtractor}.
  * 
  * @author Damien
  *
