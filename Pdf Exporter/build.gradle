@@ -1,0 +1,21 @@
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+repositories{
+	mavenCentral()
+	mavenLocal()
+}
+
+dependencies {
+	runtime "org.apache.pdfbox:pdfbox:1.8.8"
+}
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+			groupId = "com.thinoza"
+			artifactId = "pdf.export"
+			version = "1.0.0"
+		}
+	}
+}
