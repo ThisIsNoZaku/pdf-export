@@ -7,7 +7,7 @@ repositories{
 }
 
 dependencies {
-	runtime "org.apache.pdfbox:pdfbox:1.8.8"
+	compile "org.apache.pdfbox:pdfbox:1.8.8"
 }
 
 publishing {
@@ -16,6 +16,14 @@ publishing {
 			groupId = "com.thinoza"
 			artifactId = "pdf.export"
 			version = "1.0.0"
+		}
+	}
+}
+
+sourceSets{
+	main {
+		java{
+			srcDir 'src/java'
 		}
 	}
 }
