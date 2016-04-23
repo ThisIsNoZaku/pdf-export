@@ -1,11 +1,12 @@
-package com.thinoza.pdfexporter;
+package io.github.thisisnozaku.pdfexporter;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 
 /**
- * Fills and saves a pdf form.
+ * Fills and saves a pdf form, combining the functionality of the value extractor and
  * 
  * @author Damien
  *
@@ -20,7 +21,7 @@ public class PdfExporter {
 	 * @param writer
 	 *            the writer
 	 */
-	PdfExporter(PdfFieldWriter writer) {
+	public PdfExporter(PdfFieldWriter writer) {
 		if (writer == null) {
 			throw new IllegalStateException();
 		} else {
@@ -29,7 +30,7 @@ public class PdfExporter {
 	}
 
 	/**
-	 * No-args constructor, using the default internal implementation for the
+	 * No-args constructor, using the default reflection internal implementation for the
 	 * writer.
 	 */
 	public PdfExporter() {
@@ -47,8 +48,8 @@ public class PdfExporter {
 	 *            the destination
 	 * @throws IOException
 	 */
-	public void exportPdf(Map<String, String> fieldMappings, File originPdf,
-			File destination) throws IOException {
+	public void exportPdf(Map<String, String> fieldMappings, InputStream originPdf,
+			OutputStream destination) throws IOException {
 		writer.writePdf(originPdf, destination, fieldMappings);
 	}
 }

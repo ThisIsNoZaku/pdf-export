@@ -1,4 +1,4 @@
-package com.thinoza.pdfexporter;
+package io.github.thisisnozaku.pdfexporter;
 
 import java.util.Map;
 
@@ -17,6 +17,6 @@ public interface FieldValueExtractor {
 	 * @param annotatedObject
 	 * @return the field name-to-value mappings
 	 */
-	public abstract Map<String, String> generateFieldMappings(
+	Map<String, String> generateFieldMappings(
 			Object annotatedObject);
 }

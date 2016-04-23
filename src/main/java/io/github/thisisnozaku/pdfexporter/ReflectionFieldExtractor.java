@@ -1,4 +1,4 @@
-package com.thinoza.pdfexporter;
+package io.github.thisisnozaku.pdfexporter;
 
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;

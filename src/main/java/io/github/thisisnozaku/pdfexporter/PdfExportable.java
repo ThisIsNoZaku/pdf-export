@@ -1,4 +1,4 @@
-package com.thinoza.pdfexporter;
+package io.github.thisisnozaku.pdfexporter;
 
 /**
  * Annotation for mapping object to pdf form fields when using the

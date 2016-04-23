@@ -1,7 +1,9 @@
-package com.thinoza.pdfexporter;
+package io.github.thisisnozaku.pdfexporter;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 
 /**
@@ -24,6 +26,6 @@ public interface PdfFieldWriter {
 	 *            the field values
 	 * @throws IOException
 	 */
-	public void writePdf(File originPdf, File destination,
-			Map<String, String> fieldValues) throws IOException;
+	public void writePdf(InputStream originPdf, OutputStream destination,
+                         Map<String, String> fieldValues) throws IOException;
 }
