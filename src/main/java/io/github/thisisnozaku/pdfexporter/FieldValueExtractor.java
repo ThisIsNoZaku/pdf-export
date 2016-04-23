@@ -9,14 +9,14 @@ import java.util.Map;
  * @author Damien
  *
  */
-public interface FieldValueExtractor {
+public interface FieldValueExtractor<T> {
 	/**
 	 * Generates a field-to-value mapping from the given object and returns the
 	 * resulting map.
 	 * 
-	 * @param annotatedObject
+	 * @param source    the value to generate the mappings from
 	 * @return the field name-to-value mappings
 	 */
 	Map<String, String> generateFieldMappings(
-			Object annotatedObject);
+			T source);
 }
