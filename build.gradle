@@ -8,14 +8,17 @@ repositories{
 
 dependencies {
 	compile "org.apache.pdfbox:pdfbox:1.8.8"
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
+    testCompile 'junit:junit:4.12'
 }
 
 publishing {
 	publications {
 		maven(MavenPublication) {
-			groupId = "com.thinoza"
-			artifactId = "pdf.export"
+			groupId = "io.github.thisisnozaku"
+			artifactId = "pdf-export"
 			version = "1.0.0"
+            from components.java
 		}
 	}
 }
