@@ -82,9 +82,9 @@ public class DefaultPdfWriter implements PdfFieldWriter {
                 Optional<String> valueKey = valueFields.keySet().stream().filter(e->e.matches(String.format(".*\\{%s\\}.*", placeholder)))
                         .findFirst();
                 if(valueKey.isPresent()){
-                    String replacedKey = valueKey.get().replaceAll(
+                    String keyWithReplacement = valueKey.get().replaceAll(
                             String.format("\\{%s\\}", placeholder), placeholderReplacements.get(placeholder));
-                    valueFields.put(replacedKey, valueFields.get(valueKey.get()));
+                    valueFields.put(keyWithReplacement, valueFields.get(valueKey.get()));
                     valueFields.remove(valueKey.get());
                 }
                 Optional<String> literalKey = literalFields.keySet().stream().filter(e->e.matches(String.format(".*\\{%s\\}.*", placeholder)))
@@ -92,12 +92,11 @@ public class DefaultPdfWriter implements PdfFieldWriter {
                 if(literalKey.isPresent()){
                     String keyWithReplacement = literalKey.get().replaceAll(String.format("\\{%s\\}", placeholder),
                             placeholderReplacements.get(placeholder));
+                    String valueWithReplacement = literalFieldValues.get(literalKey.get()).replaceAll(String.format("\\{%s\\}", placeholder),
+                            placeholderReplacements.get(placeholder));
                     literalFields.put(keyWithReplacement, literalFields.get(literalKey.get()));
                     literalFields.remove(literalKey.get());
-                    literalFieldValues.put(keyWithReplacement,
-                            literalFieldValues.get(literalKey.get()).replaceAll(String.format("\\{%s\\}",
-                                    placeholder),
-                            placeholderReplacements.get(placeholder)));
+                    literalFieldValues.put(keyWithReplacement,valueWithReplacement);
                     literalFieldValues.remove(literalKey.get());
                 }
             }
@@ -136,16 +135,28 @@ public class DefaultPdfWriter implements PdfFieldWriter {
 
     }
 
-    private void calculateFullFieldName(COSObjectable field, List<String> precedingNameTokens) throws IOException {
+    private void calculateFullFieldName(PDField field, List<String> precedingNameTokens) throws IOException {
         if (PDField.class.isAssignableFrom(field.getClass())) {
-            Set<String> set = new HashSet<>();
-            List<COSObjectable> kids = ((PDField) field).getKids();
             if (((PDField) field).getPartialName() != null) {
                 precedingNameTokens.add(((PDField) field).getPartialName());
             }
-            if (kids != null && !field.getClass().equals(PDRadioCollection.class)) {
-                for (COSObjectable kid : kids) {
-                    calculateFullFieldName(kid, new ArrayList<>(precedingNameTokens));
+            Optional<List<COSObjectable>> kids = Optional.empty();
+            if(field.getKids() != null) {
+                List<COSObjectable> filtered = field.getKids().stream()
+                        .filter(e -> PDField.class.isAssignableFrom(e.getClass())
+                        ).collect(Collectors.toList());
+                if(filtered.size() == 0){
+                    kids = Optional.empty();
+                } else {
+                    kids = Optional.of(filtered);
+                }
+
+            }
+            if (kids.isPresent() && !field.getClass().equals(PDRadioCollection.class)) {
+                for (COSObjectable kid : kids.get()) {
+                    if(PDField.class.isAssignableFrom(kid.getClass())) {
+                        calculateFullFieldName((PDField)kid, new ArrayList<>(precedingNameTokens));
+                    }
                 }
 
             } else {

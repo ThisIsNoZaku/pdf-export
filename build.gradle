@@ -17,7 +17,7 @@ publishing {
 		maven(MavenPublication) {
 			groupId = "io.github.thisisnozaku"
 			artifactId = "pdf-export"
-			version = "1.0.0"
+			version = "1.0.2"
             from components.java
 		}
 	}
