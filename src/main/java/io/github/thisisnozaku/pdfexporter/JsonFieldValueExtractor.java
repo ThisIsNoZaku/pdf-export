@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * FieldValueExtractor that extracts json from a
+ * FieldValueExtractor that extracts from a json string.
  * Created by Damien on 4/23/2016.
  */
 public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
@@ -49,17 +49,20 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
                     mappings.putAll(generateFieldMappings(objectMapper.writeValueAsString(next)));
                     i++;
                 }
+                traversedFieldNames.pop();
             } else if(jsonTree.isValueNode()){
                 List<String> nameTokens = traversedFieldNames.stream().collect(Collectors.toList());
                 Collections.reverse(nameTokens);
                 mappings.put(nameTokens.stream().collect(Collectors.joining()), jsonTree.asText());
-                traversedFieldNames.pop();
-                if(traversedFieldNames.peek()!=null && (traversedFieldNames.peek().equals(".") || traversedFieldNames.peek().matches("[\\d+]"))){
-                    traversedFieldNames.pop();
-                }
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        if(traversedFieldNames.peek()!=null){
+            traversedFieldNames.pop();
+            while(traversedFieldNames.peek() != null && traversedFieldNames.peek().equals(".")){
+                traversedFieldNames.pop();
+            }
         }
         return mappings;
     }

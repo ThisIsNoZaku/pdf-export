@@ -7,49 +7,37 @@ import java.util.Map;
 
 /**
  * Fills and saves a pdf form, combining the functionality of the value extractor and
- * 
- * @author Damien
  *
+ * @author Damien
  */
-public class PdfExporter {
-	private final PdfFieldWriter writer;
+public class PdfExporter<T> {
+    private final PdfFieldWriter writer;
+    private final FieldValueExtractor extractor;
 
-	/**
-	 * Parameterized constructor, which allows a custom implementation of
-	 * PdfWriter to be provided.
-	 * 
-	 * @param writer
-	 *            the writer
-	 */
-	public PdfExporter(PdfFieldWriter writer) {
-		if (writer == null) {
-			throw new IllegalStateException();
-		} else {
-			this.writer = writer;
-		}
-	}
+    /**
+     * Parameterized constructor, which allows a custom implementation of
+     * PdfWriter to be provided.
+     *
+     * @param writer the writer
+     */
+    public PdfExporter(PdfFieldWriter writer, FieldValueExtractor<T> fieldValueExtractor) {
+        if (writer == null || fieldValueExtractor == null) {
+            throw new IllegalStateException();
+        }
+        this.writer = writer;
+        this.extractor = fieldValueExtractor;
+    }
 
-	/**
-	 * No-args constructor, using the default reflection internal implementation for the
-	 * writer.
-	 */
-	public PdfExporter() {
-		this(new DefaultPdfWriter());
-	}
-
-	/**
-	 * Fills the pdf from data and writes the result to destination.
-	 * 
-	 * @param fieldMappings
-	 *            the field mappings
-	 * @param originPdf
-	 *            the pdf
-	 * @param destination
-	 *            the destination
-	 * @throws IOException
-	 */
-	public void exportPdf(Map<String, String> fieldMappings, InputStream originPdf,
-			OutputStream destination) throws IOException {
-		writer.writePdf(originPdf, destination, fieldMappings);
-	}
+    /**
+     * Fills the pdf from data and writes the result to destination.
+     *
+     * @param source      the object to extract the values from
+     * @param originPdf   the pdf
+     * @param destination the destination
+     * @throws IOException
+     */
+    public void exportPdf(T source, InputStream originPdf,
+                          OutputStream destination) throws IOException {
+        writer.writePdf(originPdf, destination, this.extractor.generateFieldMappings(source));
+    }
 }

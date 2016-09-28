@@ -9,6 +9,9 @@ import java.util.Map;
 /**
  * Interface for filling a fillable form PDF using given field-to-value mappings
  * and writing out the result.
+ *
+ * Implementations are responsible for defining and explaining the rules for deciding how they
+ * determine the mapping to field names.
  * 
  * @author Damien
  *
