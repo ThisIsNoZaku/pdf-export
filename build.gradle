@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'maven-publish'
+apply plugin: 'jacoco'
 
 repositories{
 	mavenCentral()
@@ -17,7 +18,7 @@ publishing {
 		maven(MavenPublication) {
 			groupId = "io.github.thisisnozaku"
 			artifactId = "pdf-export"
-			version = "1.0.2"
+			version = "0.0.2"
             from components.java
 		}
 	}
