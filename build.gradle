@@ -13,12 +13,14 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
+project.version = "0.0.2"
+
 publishing {
 	publications {
 		maven(MavenPublication) {
 			groupId = "io.github.thisisnozaku"
 			artifactId = "pdf-export"
-			version = "0.0.2"
+			version = "${project.version}"
             from components.java
 		}
 	}
@@ -34,4 +36,9 @@ sourceSets{
 
 jar {
     from sourceSets.main.allSource
+	archiveName = "${project.name}-${project.version}.jar"
+}
+
+task wrapper(type: Wrapper){
+	gradleVersion = '5.0'
 }
