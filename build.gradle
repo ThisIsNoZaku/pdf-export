@@ -9,12 +9,11 @@ repositories{
 
 dependencies {
 	compile "org.apache.pdfbox:pdfbox:1.8.12"
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
     testCompile 'junit:junit:4.12'
 }
 
-project.version = "0.0.2"
-
+project.version = "0.0.3"
 publishing {
 	publications {
 		maven(MavenPublication) {
