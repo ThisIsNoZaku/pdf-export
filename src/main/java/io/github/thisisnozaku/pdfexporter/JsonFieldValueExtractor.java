@@ -22,7 +22,12 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
     private Deque<String> traversedFieldNames = new ArrayDeque<>();
 
     @Override
-    public Map<String, String> generateFieldMappings(String json) {
+    public Map<String, String> generateFieldMappings(String json){
+        validateJson(json);
+        return internalGenerateFieldMappings(json);
+    }
+
+    private Map<String, String> internalGenerateFieldMappings(String json) {
         Map<String, String> mappings = new HashMap<>();
         try {
             JsonNode jsonTree = objectMapper.readTree(json);
@@ -56,7 +61,7 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
                 mappings.put(nameTokens.stream().collect(Collectors.joining()), jsonTree.asText());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException(e);
         }
         if(traversedFieldNames.peek()!=null){
             traversedFieldNames.pop();
@@ -65,5 +70,16 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
             }
         }
         return mappings;
+    }
+
+    private void validateJson(String json){
+        try {
+            JsonNode o = objectMapper.readTree(json);
+            if(!o.isObject()){
+                throw new IOException("Input must be a valid JSON object.");
+            }
+        } catch (IOException io){
+            throw new IllegalArgumentException(io);
+        }
     }
 }

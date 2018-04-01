@@ -47,4 +47,12 @@ public class JsonFieldValueExtractorTest {
         expected.put("address", "123 Some St");
         assertEquals(expected, fieldValueExtractor.generateFieldMappings(sourceJson));
     }
+
+    @org.junit.Test(expected = IllegalArgumentException.class)
+    public void throwExceptionOnInvalidJson() throws Exception {
+        JsonFieldValueExtractor fieldValueExtractor = new JsonFieldValueExtractor();
+        String sourceJson = "'name' : 'Damien Marble', 'phone numbers' : ['555-123-4567', '555-987-6543'], 'address' : '123 Some St'";
+        Map<String, String> result = fieldValueExtractor.generateFieldMappings(sourceJson);
+        throw new Exception();
+    }
 }
