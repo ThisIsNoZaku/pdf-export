@@ -35,9 +35,9 @@ import org.apache.pdfbox.pdmodel.interactive.form.*;
  * "phone numbers.home" which is not already mapped to a placeholder, then anywhere that "{1}" appears, it will be
  * replaced by "home".
  * <p>
- * You can instead insert a property name, or a potion of one, rather than its value, by surrounding the portion of the property name to
+ * You can instead insert a property name, or a portion of one, rather than its value, by surrounding the portion of the property name to
  * insert with quotation marks. For example, if the above property were instead 'phone number."{1}"' with the same mapping,
- * the value of the fiels would be "home".
+ * the value of the fields would be "home".
  *
  * @author Damien
  */
