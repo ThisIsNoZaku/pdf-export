@@ -43,7 +43,7 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
                         traversedFieldNames.push(".");
                     }
                     traversedFieldNames.push(next.getKey());
-                    mappings.putAll(generateFieldMappings(objectMapper.writeValueAsString(next.getValue())));
+                    mappings.putAll(internalGenerateFieldMappings(objectMapper.writeValueAsString(next.getValue())));
                 }
             } else if(jsonTree.isArray()){
                 Iterator<JsonNode> iter = jsonTree.elements();
@@ -51,7 +51,7 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
                 while(iter.hasNext()){
                     JsonNode next = iter.next();
                     traversedFieldNames.push("[" + i + "]");
-                    mappings.putAll(generateFieldMappings(objectMapper.writeValueAsString(next)));
+                    mappings.putAll(internalGenerateFieldMappings(objectMapper.writeValueAsString(next)));
                     i++;
                 }
                 traversedFieldNames.pop();
