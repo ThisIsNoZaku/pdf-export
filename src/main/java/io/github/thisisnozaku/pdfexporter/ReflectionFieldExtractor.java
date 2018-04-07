@@ -31,7 +31,7 @@ import java.util.Set;
  * order in which the items are iterated over, or, for Maps, the key of the
  * entry. For example, the string form of the first element in a Collection
  * annotated with the value "Numbers" will be mapped to 'Numbers#1' while in a
- * Map<String, Number> annotated the same, the value mapped to the key "one"
+ * Map&lt;String, Number&gt; annotated the same, the value mapped to the key "one"
  * would go into field "Numbers#one".
  * 
  * The extractor maintains a set of all the objects it has already visited in
