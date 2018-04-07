@@ -13,7 +13,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-project.version = "0.0.3"
+project.version = "0.0.4"
 publishing {
 	publications {
 		maven(MavenPublication) {
