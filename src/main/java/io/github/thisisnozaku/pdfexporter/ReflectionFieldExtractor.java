@@ -44,7 +44,12 @@ public class ReflectionFieldExtractor implements FieldValueExtractor {
 	private Set<Object> visitedObjects = new HashSet<>();
 	private Deque<String> namePrefixes = new ArrayDeque<>();
 
-	public @Override Map<String, String> generateFieldMappings(Object object) {
+	@Override
+	public Map<String, String> generateFieldMappings(Object source) {
+		return generateFieldMappings(source, FieldMappingDefinition.getDefinition());
+	}
+
+	public @Override Map<String, String> generateFieldMappings(Object object, FieldMappingDefinition mappingDefinition) {
 		if (visitedObjects.contains(object)) {
 			return Collections.<String, String> emptyMap();
 		}

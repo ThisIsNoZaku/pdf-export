@@ -94,7 +94,37 @@ will see the placeholder value and attempt to find an incoming property name to 
 the string "home".
 
 Pdf field names may also have it so that rather than their value being found in the incoming data mappings, it is instead derived from the field name itself. This is done by putting a
-portion of the field name in quotation marks, after replacing placeholder values. So a field named "phone."{1}"" and using the above placeholder mappings will have the value of "home". 
+portion of the field name in quotation marks, after replacing placeholder values. So a field named "phone."{1}"" and using the above placeholder mappings will have the value of "home".
+
+ The mappings between the model properties and the fields can also be overridden at mapping time. Let's say your model has
+ different fields for a persons home, mobile and work phone numbers, but the PDF only has generic "phone" fields. When performing
+ the property mapping you can specify that those three model fields will be combined for the "phone" fields in the form.
+
+```
+#!json
+{
+   "first name": "Felix",
+   "second name": "Pierre",
+   "address" : {
+      "street name" : "Main st",
+      "street number" : 101
+   },
+   "phone" : {
+     "home" : "555-5555",
+     "work" : "555-1234",
+     "mobile" : "555-9876"
+   }
+}
+```
+
+With this json, this mapping can be achieved with thees overrides: 
+
+```$xslt
+phone.home -> phone[0]
+phone.work -> phone[1]
+phone.mobile -> phone[2]
+```
+ 
 
 # For Java #
 Due to the wider variety of data structures in, the rules are a bit more complicated. Currently, the testing for this functionality is less robust, so use at your own risk.
