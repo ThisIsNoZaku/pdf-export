@@ -52,6 +52,12 @@ signing {
 	sign publishing.publications.sonatype
 }
 
+artifacts {
+	archives jar
+	archives sourcesJar
+	archives javadocJar
+}
+
 sourceSets{
 	main {
 		java{
@@ -90,6 +96,7 @@ uploadArchives {
 				packaging 'jar'
 				// optionally artifactId can be defined here
 				description 'A Pdf-form filling application'
+				scmUrl "https://github.com/ThisIsNoZaku/pdf-export.git"
 
 
 				licenses {
