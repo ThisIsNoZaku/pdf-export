@@ -96,7 +96,10 @@ uploadArchives {
 				packaging 'jar'
 				// optionally artifactId can be defined here
 				description 'A Pdf-form filling application'
-				scmUrl "https://github.com/ThisIsNoZaku/pdf-export.git"
+				url "https://github.com/ThisIsNoZaku/pdf-export"
+				scm {
+					url "https://github.com/ThisIsNoZaku/pdf-export.git"
+				}
 
 
 				licenses {
