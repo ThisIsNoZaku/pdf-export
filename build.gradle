@@ -1,6 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 repositories{
 	mavenCentral()
@@ -13,7 +15,18 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-project.version = "0.0.4"
+project.version = "1.0.2"
+
+task sourcesJar(type: Jar) {
+	from sourceSets.main.allSource
+	classifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+	from javadoc
+	classifier = 'javadoc'
+}
+
 publishing {
 	publications {
 		maven(MavenPublication) {
@@ -22,7 +35,21 @@ publishing {
 			version = "${project.version}"
             from components.java
 		}
+
+		sonatype(MavenPublication) {
+			groupId = "io.github.thisisnozaku"
+			artifactId = "pdf-export"
+			version = "${project.version}"
+			from components.java
+			artifact sourcesJar
+			artifact javadocJar
+		}
 	}
+}
+
+
+signing {
+	sign publishing.publications.sonatype
 }
 
 sourceSets{
@@ -34,10 +61,52 @@ sourceSets{
 }
 
 jar {
-    from sourceSets.main.allSource
+    from sourceSets.main.output
 	archiveName = "${project.name}-${project.version}.jar"
 }
 
 task wrapper(type: Wrapper){
 	gradleVersion = '4.10'
+}
+
+assemble.finalizedBy(sourcesJar)
+assemble.finalizedBy(javadocJar)
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+				authentication(userName: project.properties["ossrhUsername"], password: project.properties["ossrhPassword"])
+			}
+
+			snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+				authentication(userName: project.properties["ossrhUsername"], password: project.properties["ossrhPassword"])
+			}
+
+			pom.project {
+				name 'Pdf-export'
+				packaging 'jar'
+				// optionally artifactId can be defined here
+				description 'A Pdf-form filling application'
+
+
+				licenses {
+					license {
+						name 'The Apache License, Version 2.0'
+						url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					}
+				}
+
+				developers {
+					developer {
+						id 'damien'
+						name 'Damien Marble'
+						email 'damienmarble@gmail.com'
+					}
+				}
+			}
+		}
+	}
 }
