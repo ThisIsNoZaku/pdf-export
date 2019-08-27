@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ser.std.IterableSerializer;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -20,29 +22,19 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
         objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
     }
     private Deque<String> traversedFieldNames = new ArrayDeque<>();
-    private final Map<String, String> overrideMappings;
-
-    public JsonFieldValueExtractor() {
-        this.overrideMappings = Collections.EMPTY_MAP;
-    }
-
-    public JsonFieldValueExtractor(Map<String, String> overrideMappings) {
-        this.overrideMappings = overrideMappings;
-    }
-
 
     @Override
     public Map<String, String> generateFieldMappings(String json){
-        return generateFieldMappings(json, FieldMappingDefinition.getDefinition());
+        return generateFieldMappings(json, Collections.EMPTY_MAP);
     }
 
     @Override
-    public Map<String, String> generateFieldMappings(String json, FieldMappingDefinition fieldMappingDefinition) {
+    public Map<String, String> generateFieldMappings(String json, Map<String, String> propertyToFieldOverrides) {
         validateJson(json);
-        return internalGenerateFieldMappings(json, fieldMappingDefinition);
+        return internalGenerateFieldMappings(json, propertyToFieldOverrides);
     }
 
-    private Map<String, String> internalGenerateFieldMappings(String json, FieldMappingDefinition mappingDefinition) {
+    private Map<String, String> internalGenerateFieldMappings(String json, Map<String, String> propertyToFieldOverrides) {
         Map<String, String> mappings = new HashMap<>();
         try {
             JsonNode jsonTree = objectMapper.readTree(json);
@@ -58,7 +50,7 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
                         traversedFieldNames.push(".");
                     }
                     traversedFieldNames.push(next.getKey());
-                    mappings.putAll(internalGenerateFieldMappings(objectMapper.writeValueAsString(next.getValue()), mappingDefinition));
+                    mappings.putAll(internalGenerateFieldMappings(objectMapper.writeValueAsString(next.getValue()), propertyToFieldOverrides));
                 }
             } else if(jsonTree.isArray()){
                 Iterator<JsonNode> iter = jsonTree.elements();
@@ -66,7 +58,7 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
                 while(iter.hasNext()){
                     JsonNode next = iter.next();
                     traversedFieldNames.push("[" + i + "]");
-                    mappings.putAll(internalGenerateFieldMappings(objectMapper.writeValueAsString(next), mappingDefinition));
+                    mappings.putAll(internalGenerateFieldMappings(objectMapper.writeValueAsString(next), propertyToFieldOverrides));
                     i++;
                 }
                 traversedFieldNames.pop();
@@ -74,17 +66,14 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
                 List<String> nameTokens = traversedFieldNames.stream().collect(Collectors.toList());
                 Collections.reverse(nameTokens);
                 String propertyName = nameTokens.stream().collect(Collectors.joining());
-                for(Map.Entry<String, String> override : mappingDefinition.getFieldMappings().entrySet()){
-                    if(propertyName.contains(override.getKey())){
-                        propertyName = propertyName.replace(override.getKey(), override.getValue());
+                for(Map.Entry<String, String> override : propertyToFieldOverrides.entrySet()){
+                    Matcher propertyMatcher = Pattern.compile(override.getKey(), Pattern.CASE_INSENSITIVE).matcher(propertyName);
+                    if (propertyMatcher.matches()) {
+                        propertyName = propertyMatcher.replaceAll(override.getValue());
                         break;
                     }
                 }
-                if(overrideMappings.containsKey(propertyName)) {
-                    mappings.put(overrideMappings.get(propertyName), jsonTree.asText());
-                } else {
                     mappings.put(propertyName, jsonTree.asText());
-                }
             }
         } catch (IOException e) {
             throw new IllegalArgumentException(e);

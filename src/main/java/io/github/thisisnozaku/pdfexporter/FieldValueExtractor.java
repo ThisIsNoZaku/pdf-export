@@ -21,12 +21,15 @@ public interface FieldValueExtractor<T> {
 
     /**
      * Generates a field-to-value mapping from the given object and returns the
-     * resulting map. The given FieldMappingDefinition overrides the default mappings.
+     * resulting map.
      *
-     * @param source                 the value to generate the mappings from
-     * @param fieldMappingDefinition the mappings used to override the default mappings
+     * If a path is found in the propertyToFieldOverrides, the associated value is used instead of the one the
+     * extractor would normally calculate.
+     *
+     * @param source                    the value to generate the mappings from
+     * @param propertyToFieldOverrides  the mappings used to override the default mappings
      * @return the field name-to-value mappings
      */
     Map<String, String> generateFieldMappings(
-            T source, FieldMappingDefinition fieldMappingDefinition);
+            T source, Map<String, String> propertyToFieldOverrides);
 }

@@ -40,16 +40,17 @@ import java.util.Set;
  * @author Damien
  *
  */
-public class ReflectionFieldExtractor implements FieldValueExtractor {
+public class ReflectionFieldExtractor implements FieldValueExtractor<Object> {
 	private Set<Object> visitedObjects = new HashSet<>();
 	private Deque<String> namePrefixes = new ArrayDeque<>();
 
 	@Override
 	public Map<String, String> generateFieldMappings(Object source) {
-		return generateFieldMappings(source, FieldMappingDefinition.getDefinition());
+		return generateFieldMappings(source, Collections.EMPTY_MAP);
 	}
 
-	public @Override Map<String, String> generateFieldMappings(Object object, FieldMappingDefinition mappingDefinition) {
+	@Override
+	public Map<String, String> generateFieldMappings(Object object, Map<String, String> mappingDefinition) {
 		if (visitedObjects.contains(object)) {
 			return Collections.<String, String> emptyMap();
 		}

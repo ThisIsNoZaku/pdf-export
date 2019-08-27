@@ -65,15 +65,14 @@ public class JsonFieldValueExtractorTest {
         String sourceJson = "{'name' : 'Damien Marble', 'phone numbers' : ['555-123-4567', '555-987-6543'], 'address' : '123 Some St'}";
 
         Map<String, String> mappingOverrides = new HashMap<>();
-        mappingOverrides.put("phone numbers", "contacts");
-        FieldMappingDefinition mappingDefinition = FieldMappingDefinition.getDefinition(mappingOverrides);
+        mappingOverrides.put("phone numbers\\[(\\d)\\]", "contacts[$1]");
 
         Map<String, String> expected = new HashMap<>();
         expected.put("name", "Damien Marble");
         expected.put("contacts[0]", "555-123-4567");
         expected.put("contacts[1]", "555-987-6543");
         expected.put("address", "123 Some St");
-        assertEquals(expected, fieldValueExtractor.generateFieldMappings(sourceJson, mappingDefinition));
+        assertEquals(expected, fieldValueExtractor.generateFieldMappings(sourceJson, mappingOverrides));
     }
 
     @Test
@@ -83,7 +82,6 @@ public class JsonFieldValueExtractorTest {
 
         Map<String, String> mappingOverrides = new HashMap<>();
         mappingOverrides.put("home.address", "address");
-        FieldMappingDefinition mappingDefinition = FieldMappingDefinition.getDefinition(mappingOverrides);
 
         Map<String, String> expected = new HashMap<>();
         expected.put("name", "Damien Marble");
@@ -92,7 +90,7 @@ public class JsonFieldValueExtractorTest {
         expected.put("address", "123 Some St");
         expected.put("home.city", "Hometown");
         expected.put("home.country", "USA");
-        assertEquals(expected, fieldValueExtractor.generateFieldMappings(sourceJson, mappingDefinition));
+        assertEquals(expected, fieldValueExtractor.generateFieldMappings(sourceJson, mappingOverrides));
     }
 
     @Test
@@ -103,7 +101,6 @@ public class JsonFieldValueExtractorTest {
         Map<String, String> mappingOverrides = new HashMap<>();
         mappingOverrides.put("phone numbers.mobile", "phone[0]");
         mappingOverrides.put("phone numbers.work", "phone[1]");
-        FieldMappingDefinition mappingDefinition = FieldMappingDefinition.getDefinition(mappingOverrides);
 
         Map<String, String> expected = new HashMap<>();
         expected.put("name", "Damien Marble");
@@ -112,6 +109,6 @@ public class JsonFieldValueExtractorTest {
         expected.put("home.address", "123 Some St");
         expected.put("home.city", "Hometown");
         expected.put("home.country", "USA");
-        assertEquals(expected, fieldValueExtractor.generateFieldMappings(sourceJson, mappingDefinition));
+        assertEquals(expected, fieldValueExtractor.generateFieldMappings(sourceJson, mappingOverrides));
     }
 }
