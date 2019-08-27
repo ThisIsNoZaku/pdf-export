@@ -20,6 +20,16 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
         objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
     }
     private Deque<String> traversedFieldNames = new ArrayDeque<>();
+    private final Map<String, String> overrideMappings;
+
+    public JsonFieldValueExtractor() {
+        this.overrideMappings = Collections.EMPTY_MAP;
+    }
+
+    public JsonFieldValueExtractor(Map<String, String> overrideMappings) {
+        this.overrideMappings = overrideMappings;
+    }
+
 
     @Override
     public Map<String, String> generateFieldMappings(String json){
@@ -70,7 +80,11 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
                         break;
                     }
                 }
-                mappings.put(propertyName, jsonTree.asText());
+                if(overrideMappings.containsKey(propertyName)) {
+                    mappings.put(overrideMappings.get(propertyName), jsonTree.asText());
+                } else {
+                    mappings.put(propertyName, jsonTree.asText());
+                }
             }
         } catch (IOException e) {
             throw new IllegalArgumentException(e);

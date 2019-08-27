@@ -3,7 +3,10 @@ package io.github.thisisnozaku.pdfexporter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Fills and saves a pdf form, combining the functionality of the value extractor and
@@ -37,7 +40,16 @@ public class PdfExporter<T> {
      * @throws IOException
      */
     public void exportPdf(T source, InputStream originPdf,
+                          OutputStream destination, Map<String, String> overrideMappings) throws IOException {
+        Map<String, String> initialMappings = this.extractor.generateFieldMappings(source);
+        overrideMappings.entrySet().stream().forEach(e -> {
+            initialMappings.put(e.getValue(), initialMappings.remove(e.getKey()));
+        });
+        writer.writePdf(originPdf, destination, initialMappings);
+    }
+
+    public void exportPdf(T source, InputStream originPdf,
                           OutputStream destination) throws IOException {
-        writer.writePdf(originPdf, destination, this.extractor.generateFieldMappings(source));
+        exportPdf(source, originPdf, destination, Collections.EMPTY_MAP);
     }
 }

@@ -15,7 +15,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-project.version = "1.0.2"
+project.version = "1.1.0"
 
 task sourcesJar(type: Jar) {
 	from sourceSets.main.allSource
@@ -74,9 +74,6 @@ jar {
 task wrapper(type: Wrapper){
 	gradleVersion = '4.10'
 }
-
-assemble.finalizedBy(sourcesJar)
-assemble.finalizedBy(javadocJar)
 
 uploadArchives {
 	repositories {
