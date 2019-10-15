@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  * Fills and saves a pdf form, combining the functionality of the value extractor and
  *
  * @author Damien
+ * @param <T>   The input type.
  */
 public class PdfExporter<T> {
     private final PdfFieldWriter writer;
@@ -22,6 +23,7 @@ public class PdfExporter<T> {
      * PdfWriter to be provided.
      *
      * @param writer the writer
+     * @param fieldValueExtractor   The class to extract data
      */
     public PdfExporter(PdfFieldWriter writer, FieldValueExtractor<T> fieldValueExtractor) {
         if (writer == null || fieldValueExtractor == null) {
@@ -43,9 +45,11 @@ public class PdfExporter<T> {
                           OutputStream destination, Map<String, String> overrideMappings) throws IOException {
         Map<String, String> initialMappings = this.extractor.generateFieldMappings(source);
         overrideMappings.entrySet().stream().forEach(e -> {
-            initialMappings.put(e.getValue(), initialMappings.remove(e.getKey()));
+            String previousValue = initialMappings.remove(e.getKey());
+            initialMappings.put(e.getValue(), previousValue);
         });
-        writer.writePdf(originPdf, destination, initialMappings);
+        Map<String, String> finalMappings = initialMappings.entrySet().stream().filter(e -> e.getValue() != null && !e.getValue().isEmpty()).collect(Collectors.toMap(e -> e.getKey(), e->e.getValue()));
+        writer.writePdf(originPdf, destination, finalMappings);
     }
 
     public void exportPdf(T source, InputStream originPdf,
