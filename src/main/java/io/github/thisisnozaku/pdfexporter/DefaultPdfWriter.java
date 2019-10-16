@@ -7,6 +7,8 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDCheckbox;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDRadioCollection;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextbox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +43,7 @@ import java.util.stream.Stream;
  * @author Damien
  */
 public class DefaultPdfWriter implements PdfFieldWriter {
+    private static final Logger logger = LoggerFactory.getLogger(PdfFieldWriter.class);
     private Map<String, PDField> fields;
 
     @Override
@@ -102,19 +105,25 @@ public class DefaultPdfWriter implements PdfFieldWriter {
 
             //Discard any incoming mappings that don't have a matching pdf field
             Set<String> propertiesWithMatchingFields = fieldMappings.keySet().stream().filter((String field) -> {
-                return valueFields.containsKey(field) || literalFields.containsKey(field);
+                boolean fieldMatchExists = valueFields.containsKey(field) || literalFields.containsKey(field);
+                if (!fieldMatchExists) {
+                    logger.info("No match exists for incoming mapping {}", field);
+                }
+                return fieldMatchExists;
             }).collect(Collectors.toSet());
 
             for (String fieldMapping : propertiesWithMatchingFields) {
                 PDField valueField = valueFields.get(fieldMapping);
+
                 if (valueField != null) {
-                    Class fieldClass = valueField.getClass();
                     if (valueField.getClass().equals(PDTextbox.class)) {
                         valueField.setValue(fieldMappings.get(fieldMapping));
                     } else if (valueField.getClass().equals(PDCheckbox.class)) {
-                        ((PDCheckbox) valueField).getKids();
+                        if(Boolean.TRUE.equals(Boolean.parseBoolean(fieldMappings.get(fieldMapping)))) {
+                            ((PDCheckbox) valueField).check();
+                        }
                     } else if (valueField.getClass().equals(PDRadioCollection.class)) {
-                        ((PDRadioCollection) valueField).setValue(fieldMappings.get(fieldMapping));
+                        valueField.setValue(fieldMappings.get(fieldMapping));
                     }
                 }
                 PDField literalField = literalFields.get(fieldMapping);
