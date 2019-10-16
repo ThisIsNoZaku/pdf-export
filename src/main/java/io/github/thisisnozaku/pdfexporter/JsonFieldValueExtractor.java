@@ -55,12 +55,19 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
             } else if(jsonTree.isArray()){
                 Iterator<JsonNode> iter = jsonTree.elements();
                 int i = 0;
+                List<JsonNode> arrayElement = new ArrayList<>();
                 while(iter.hasNext()){
                     JsonNode next = iter.next();
                     traversedFieldNames.push("[" + i + "]");
-                    mappings.putAll(internalGenerateFieldMappings(objectMapper.writeValueAsString(next), propertyToFieldOverrides));
+                    String elementJson = objectMapper.writeValueAsString(next);
+                    mappings.putAll(internalGenerateFieldMappings(elementJson, propertyToFieldOverrides));
+                    arrayElement.add(next);
                     i++;
                 }
+                List<String> nameTokens = traversedFieldNames.stream().collect(Collectors.toList());
+                Collections.reverse(nameTokens);
+                String propertyName = nameTokens.stream().collect(Collectors.joining());
+                mappings.put(propertyName, arrayElement.stream().map(JsonNode::asText).collect(Collectors.joining(", ")));
                 traversedFieldNames.pop();
             } else if(jsonTree.isValueNode()){
                 List<String> nameTokens = traversedFieldNames.stream().collect(Collectors.toList());

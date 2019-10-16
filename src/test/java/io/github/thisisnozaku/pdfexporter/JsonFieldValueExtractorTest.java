@@ -47,6 +47,7 @@ public class JsonFieldValueExtractorTest {
         expected.put("name", "Damien Marble");
         expected.put("phone numbers[0]", "555-123-4567");
         expected.put("phone numbers[1]", "555-987-6543");
+        expected.put("phone numbers", "555-123-4567, 555-987-6543");
         expected.put("address", "123 Some St");
         assertEquals(expected, fieldValueExtractor.generateFieldMappings(sourceJson));
     }
@@ -90,6 +91,7 @@ public class JsonFieldValueExtractorTest {
         expected.put("address", "123 Some St");
         expected.put("home.city", "Hometown");
         expected.put("home.country", "USA");
+        expected.put("phone numbers", "555-123-4567, 555-987-6543");
         assertEquals(expected, fieldValueExtractor.generateFieldMappings(sourceJson, mappingOverrides));
     }
 
