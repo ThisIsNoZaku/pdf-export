@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -48,7 +48,7 @@ public class PdfExporter<T> {
             String previousValue = initialMappings.remove(e.getKey());
             initialMappings.put(e.getValue(), previousValue);
         });
-        Map<String, String> finalMappings = initialMappings.entrySet().stream().filter(e -> e.getValue() != null && !e.getValue().isEmpty()).collect(Collectors.toMap(e -> e.getKey(), e->e.getValue()));
+        Map<String, String> finalMappings = new TreeMap<>(initialMappings.entrySet().stream().filter(e -> e.getValue() != null && !e.getValue().isEmpty()).collect(Collectors.toMap(e -> e.getKey(), e->e.getValue())));
         writer.writePdf(originPdf, destination, finalMappings);
     }
 
