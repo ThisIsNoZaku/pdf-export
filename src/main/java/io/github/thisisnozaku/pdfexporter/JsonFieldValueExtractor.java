@@ -66,21 +66,15 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
                 }
                 List<String> nameTokens = traversedFieldNames.stream().collect(Collectors.toList());
                 Collections.reverse(nameTokens);
-                String propertyName = nameTokens.stream().collect(Collectors.joining());
-                mappings.put(propertyName, arrayElement.stream().map(JsonNode::asText).collect(Collectors.joining(", ")));
+                String propertyName = processReplacements(nameTokens.stream().collect(Collectors.joining()), propertyToFieldOverrides);
+                String mergedArrayValue = arrayElement.stream().map(JsonNode::asText).collect(Collectors.joining(", "));
+                mappings.put(propertyName, mergedArrayValue);
                 traversedFieldNames.pop();
             } else if(jsonTree.isValueNode()){
                 List<String> nameTokens = traversedFieldNames.stream().collect(Collectors.toList());
                 Collections.reverse(nameTokens);
-                String propertyName = nameTokens.stream().collect(Collectors.joining());
-                for(Map.Entry<String, String> override : propertyToFieldOverrides.entrySet()){
-                    Matcher propertyMatcher = Pattern.compile(override.getKey(), Pattern.CASE_INSENSITIVE).matcher(propertyName);
-                    if (propertyMatcher.matches()) {
-                        propertyName = propertyMatcher.replaceAll(override.getValue());
-                        break;
-                    }
-                }
-                    mappings.put(propertyName, jsonTree.asText());
+                String propertyName = processReplacements(nameTokens.stream().collect(Collectors.joining()), propertyToFieldOverrides);
+                mappings.put(propertyName, jsonTree.asText());
             }
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
@@ -103,5 +97,15 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
         } catch (IOException io){
             throw new IllegalArgumentException(io);
         }
+    }
+
+    private String processReplacements(String originalPropertyName, Map<String, String> placeholders) {
+        for(Map.Entry<String, String> override : placeholders.entrySet()){
+            Matcher propertyMatcher = Pattern.compile(override.getKey(), Pattern.CASE_INSENSITIVE).matcher(originalPropertyName);
+            if (propertyMatcher.matches()) {
+                return propertyMatcher.replaceAll(override.getValue());
+            }
+        }
+        return originalPropertyName;
     }
 }

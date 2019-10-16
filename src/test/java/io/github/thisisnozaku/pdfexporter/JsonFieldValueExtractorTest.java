@@ -67,11 +67,13 @@ public class JsonFieldValueExtractorTest {
 
         Map<String, String> mappingOverrides = new HashMap<>();
         mappingOverrides.put("phone numbers\\[(\\d)\\]", "contacts[$1]");
+        mappingOverrides.put("phone numbers", "contacts");
 
         Map<String, String> expected = new HashMap<>();
         expected.put("name", "Damien Marble");
         expected.put("contacts[0]", "555-123-4567");
         expected.put("contacts[1]", "555-987-6543");
+        expected.put("contacts", "555-123-4567, 555-987-6543");
         expected.put("address", "123 Some St");
         assertEquals(expected, fieldValueExtractor.generateFieldMappings(sourceJson, mappingOverrides));
     }
