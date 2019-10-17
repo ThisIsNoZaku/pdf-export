@@ -74,6 +74,11 @@ public class JsonFieldValueExtractor implements FieldValueExtractor<String> {
                 List<String> nameTokens = traversedFieldNames.stream().collect(Collectors.toList());
                 Collections.reverse(nameTokens);
                 String propertyName = processReplacements(nameTokens.stream().collect(Collectors.joining()), propertyToFieldOverrides);
+                if(jsonTree.isNumber()) {
+                    String jsonText = jsonTree.asText();
+                    boolean hasValue = jsonText != "0" && jsonText != "false" && jsonText != "";
+                    mappings.put(propertyName + "." + jsonTree.asText(), Boolean.toString(hasValue));
+                }
                 mappings.put(propertyName, jsonTree.asText());
             }
         } catch (IOException e) {

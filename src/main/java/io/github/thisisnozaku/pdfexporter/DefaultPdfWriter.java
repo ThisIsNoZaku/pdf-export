@@ -132,7 +132,6 @@ public class DefaultPdfWriter implements PdfFieldWriter {
                 }
             }
             document.save(destination);
-            document.close();
         } catch (
                 COSVisitorException e
                 )

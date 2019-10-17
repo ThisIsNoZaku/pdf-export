@@ -43,11 +43,7 @@ public class PdfExporter<T> {
      */
     public void exportPdf(T source, InputStream originPdf,
                           OutputStream destination, Map<String, String> overrideMappings) throws IOException {
-        Map<String, String> initialMappings = this.extractor.generateFieldMappings(source);
-        overrideMappings.entrySet().stream().forEach(e -> {
-            String previousValue = initialMappings.remove(e.getKey());
-            initialMappings.put(e.getValue(), previousValue);
-        });
+        Map<String, String> initialMappings = this.extractor.generateFieldMappings(source, overrideMappings)
         Map<String, String> finalMappings = new TreeMap<>(initialMappings.entrySet().stream().filter(e -> e.getValue() != null && !e.getValue().isEmpty()).collect(Collectors.toMap(e -> e.getKey(), e->e.getValue())));
         writer.writePdf(originPdf, destination, finalMappings);
     }
